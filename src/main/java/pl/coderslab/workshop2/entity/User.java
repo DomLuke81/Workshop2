@@ -37,4 +37,17 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public void printUser() {
+        System.out.println("ID:" + this.id);
+        System.out.println("username:" + this.userName);
+        System.out.println("email:" + this.email);
+    }
+
+    public User(int id, String userName, String email, String password) {
+        this.id = id;
+        this.userName = userName;
+        this.email = email;
+        this.password = password;
+    }
 }
