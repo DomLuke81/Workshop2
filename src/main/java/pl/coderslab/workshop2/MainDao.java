@@ -9,6 +9,15 @@ public class MainDao {
 //        showUser(-1);
 //        changeUserName(4, "Piotrek");
 //        deleteUser(5);
+        showAllUsers();
+    }
+
+    private static void showAllUsers() {
+        UserDao userDao = new UserDao();
+        User[] users = userDao.findAll();
+        for (User user : users) {
+            user.printUser();
+        }
     }
 
     private static void deleteUser(int id) {

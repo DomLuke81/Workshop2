@@ -4,12 +4,15 @@ import org.mindrot.jbcrypt.BCrypt;
 import pl.coderslab.workshop2.DbUtil;
 
 import java.sql.*;
+import java.util.Arrays;
 
 public class UserDao {
     private static final String CREATE_USER_QUERY =
             "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
     private static final String SELECT_USER_QUERY =
             "SELECT * FROM users WHERE id = ?";
+    private static final String SELECT_USERS_QUERY =
+            "SELECT * FROM users";
     private static final String UPDATE_USER_QUERY =
             "UPDATE users SET username = ?, email = ?, password = ? WHERE id = ?";
     private static final String DELETE_USER_QUERY =
@@ -76,10 +79,36 @@ public class UserDao {
     public void delete(int userId) {
         try (Connection conn = DbUtil.getConnection();
              PreparedStatement statement = conn.prepareStatement(DELETE_USER_QUERY)) {
-            statement.setInt(1,userId);
+            statement.setInt(1, userId);
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    private User[] addToArray(User u, User[] users) {
+        User[] tmpUsers = Arrays.copyOf(users, users.length + 1); // Tworzymy kopię tablicy powiększoną o 1.
+        tmpUsers[users.length] = u; // Dodajemy obiekt na ostatniej pozycji.
+        return tmpUsers; // Zwracamy nową tablicę.
+    }
+
+    public User[] findAll() {
+        User[] users = new User[0];
+        try (Connection conn = DbUtil.getConnection();
+             PreparedStatement statement = conn.prepareStatement(SELECT_USERS_QUERY)) {
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    User user = new User(resultSet.getInt("id"),
+                            resultSet.getString("username"),
+                            resultSet.getString("email"),
+                            resultSet.getString("password"));
+                    users = addToArray(user, users);
+                }
+                return users;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }
